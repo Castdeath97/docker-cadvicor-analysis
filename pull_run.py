@@ -1,5 +1,5 @@
 # Author: Ammar Hasan 150454388 November 2018
-# Purpose pull and load "nclcloudcomputing/javabenchmarkapp" 
+# Purpose: pull and load "nclcloudcomputing/javabenchmarkapp" 
 
 import docker
 

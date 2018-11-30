@@ -6,18 +6,25 @@ services:
       replicas: 2 
     ports:
       - "8080:8080"
-    networks: 
-      - webnet 
-  visual:
+    networks:
+      - webnet
+  visualizer:
     image: dockersamples/visualizer
+    deploy:
+      placement:
+        constraints:
+          - node.role == manager
     ports:
       - "4000:8080"
-    build: .
     volumes:
-    - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - webnet
   mongo:
     image: mongo
     ports: 
       - "3306:3306"
+    networks:
+      - webnet
 networks:
   webnet:
