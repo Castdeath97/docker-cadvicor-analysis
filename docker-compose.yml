@@ -8,19 +8,16 @@ services:
       - "8080:8080"
     networks: 
       - webnet 
-    depends_on: 
-      - mongo 
   visual:
     image: dockersamples/visualizer
     ports:
-      - "88"
+      - "4000:8080"
+    build: .
+    volumes:
+    - "/var/run/docker.sock:/var/run/docker.sock"
   mongo:
     image: mongo
     ports: 
       - "3306:3306"
-    volumes:
-      - data-volume:/data/db
-volumes:
-  data-volume: 
 networks:
   webnet:
