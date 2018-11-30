@@ -1,0 +1,26 @@
+version: "3"
+services:
+  benchmark: 
+    image: nclcloudcomputing/javabenchmarkapp
+    deploy:
+      replicas: 2 
+    ports:
+      - "8080:8080"
+    networks: 
+      - webnet 
+    depends_on: 
+      - mongo 
+  visual:
+    image: dockersamples/visualizer
+    ports:
+      - "88"
+  mongo:
+    image: mongo
+    ports: 
+      - "3306:3306"
+    volumes:
+      - data-volume:/data/db
+volumes:
+  data-volume: 
+networks:
+  webnet:
