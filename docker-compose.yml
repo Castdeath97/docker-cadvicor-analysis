@@ -26,5 +26,17 @@ services:
       - "3306:3306"
     networks:
       - webnet
+  cadvisor:
+    image: google/cadvisor
+    ports: 
+      - 3000:8080
+    volumes: 
+      - "/:/rootfs:ro"
+      - "/var/run:/var/run:ro"
+      - "/sys:/sys:ro"
+      - "/var/lib/docker/:/var/lib/docker:ro"
+      - "/dev/disk/:/dev/disk:ro"
+    networks: 
+      - webnet
 networks:
   webnet:
