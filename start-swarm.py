@@ -5,7 +5,7 @@ import docker
 
 client = docker.from_env() # docker client
 client.swarm.init() # start swarm
-
+client.services.create
 
 #docker stack deploy -c docker-compose.yml benchmarkswarm
 
