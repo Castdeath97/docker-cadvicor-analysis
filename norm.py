@@ -16,9 +16,10 @@ args = parser.parse_args() # get arguments
 # program loop
 while True : 
     # get time using numpy normal and sleep with it
-    t = abs(numpy.random.normal(args.mean, args.sigma, 1)[0])
-    time.sleep(t)
+    sleepTime = abs(numpy.random.normal(args.mean, args.sigma, 1)[0])
+    time.sleep(sleepTime)
 
     # make request after sleep and report
-    r = requests.get(args.url)
-    print("request made after: " + str(round(t,4)) + " server says: \"" + r.text + "\"")
+    res = requests.get(args.url)
+    print("request made after: " + str(round(sleepTime,4)) 
+    + " server says: \"" + res.text + "\"")

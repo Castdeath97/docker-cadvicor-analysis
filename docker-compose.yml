@@ -7,7 +7,7 @@ services:
     ports:
       - "8080:8080"
     networks:
-      - webnet
+      - webnet   
   visualizer:
     image: dockersamples/visualizer
     deploy:
@@ -23,7 +23,9 @@ services:
   mongo:
     image: mongo
     ports: 
-      - "3306:3306"
+      - "3306:27017"
+    volumes:
+      - mongodata:/data/db
     networks:
       - webnet
   cadvisor:
@@ -40,3 +42,5 @@ services:
       - webnet
 networks:
   webnet:
+volumes:
+  mongodata:
