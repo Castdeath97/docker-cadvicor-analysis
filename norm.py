@@ -9,17 +9,19 @@ import time
 # Setup required arguments
 parser = argparse.ArgumentParser("norm")
 parser.add_argument("url", help="URL to send requests to", type=str)
-parser.add_argument("mean", help="Mean intreval time for requests (seconds)", type=float)
-parser.add_argument("sigma", help="Standard Deviation for time (seconds)", type=float)
+parser.add_argument("mean", 
+help="Mean intreval time for requests (ms)", type=float)
+parser.add_argument("sigma", 
+help="Standard Deviation for time (ms)", type=float)
 args = parser.parse_args() # get arguments
 
 # program loop
 while True : 
     # get time using numpy normal and sleep with it
-    sleepTime = abs(numpy.random.normal(args.mean, args.sigma, 1)[0])
-    time.sleep(sleepTime)
+    sleep_time = abs(numpy.random.normal(args.mean, args.sigma, 1)[0])
+    time.sleep(sleep_time/1000)
 
     # make request after sleep and report
     res = requests.get(args.url)
-    print("request made after: " + str(round(sleepTime,4)) 
-    + " server says: \"" + res.text + "\"")
+    print("request made after: " + str(round(sleep_time,4)) 
+    + "ms server says: \"" + res.text + "\"")

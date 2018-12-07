@@ -1,3 +1,6 @@
+# Author: Ammar Hasan 150454388 Decmber 2018
+# Purpose: reads benchmarks back from db
+
 import pymongo
 import requests
 import json
@@ -7,10 +10,11 @@ MONGO_HOST = "mongodb://127.0.0.1:3306/"
 ADVISOR_HOST = "http://localhost:3000/api/v1.3/"
 
 # get mongo client
-myclient = pymongo.MongoClient(MONGO_HOST)
+my_client = pymongo.MongoClient(MONGO_HOST)
 
-mydb = myclient["benchdb"]
-mycol = mydb["benchcollection"]
+# setup database and collection
+my_db = my_client["benchdb"]
+my_col = my_db["benchcollection"]
 
-x = mycol.find_one()
+x = my_col.find_one()
 print(x)
