@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 # Author: Ammar Hasan 150454388 November 2018
-# Purpose: Make requests to a URL using poisson process
+# Purpose: Make requests to a URL using poisson or normal process
 
 import signal
 import sys
@@ -14,20 +14,29 @@ import pymongo
 import json
 
 # Setup required arguments
-parser = argparse.ArgumentParser("poi")
+parser = argparse.ArgumentParser("distr")
+parser.add_argument("method", help="normal(0) or poi(1) for poission", type=int)
 parser.add_argument("url", help="URL to send requests to", type=str)
-parser.add_argument("lam", 
-help="Lambda for Intreval time of requests (ms)", type=float)
+parser.add_argument("mean", help="Mean/Lambda intreval time for requests (ms)", type=float)
+parser.add_argument("sigma", help="Standard Deviation for time (ms)", type=float)
 parser.add_argument("runtime", help="running time (seconds)", type=float)
 args = parser.parse_args() # get arguments
+
+# return time to sleep/wait based on method
+def get_sleep_time():
+    if(args.method == 0):
+        return(abs(numpy.random.exponential(args.mean)))
+    else:
+        return(abs(numpy.random.normal(args.mean, args.sigma, 1)[0]))
+
 
 # Record starting time stamp
 start_time = datetime.datetime.now()
 
-# program loop
+# program loop for runtime
 while ((datetime.datetime.now().second - start_time.second) < args.runtime ) : 
-    # get time using numpy exponential (poi process) and sleep with it
-    sleep_time = abs(numpy.random.exponential(args.lam)) 
+    # get time to sleep using method 
+    sleep_time = get_sleep_time()
     time.sleep(sleep_time/1000)
 
     # make request after sleep and report
@@ -35,6 +44,7 @@ while ((datetime.datetime.now().second - start_time.second) < args.runtime ) :
     print("request made after: " + str(round(sleep_time,4)) 
     + "ms server says: \"" + r.text + "\"")
 
+# record benchmark finish time
 finish_time =  datetime.datetime.now()
 
 # save to db
@@ -42,7 +52,8 @@ finish_time =  datetime.datetime.now()
 # Hosts
 MONGO_HOST = "mongodb://127.0.0.1:3306/"
 ADVISOR_HOST = "http://localhost:3000/api/v1.3/"
-FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
+
+DATE_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
 
 # get mongo client
 my_client = pymongo.MongoClient(MONGO_HOST)
@@ -61,9 +72,10 @@ for container in js_arr:
         id = container['id']
         name = container['labels']['com.docker.swarm.service.name']
         json_stats = container['stats']
-        # iterate stats json tree
+
+        # iterate stats json tree, insert if between start and finish
         for stat in json_stats:
-            stat_time = datetime.datetime.strptime(stat['timestamp'][:-4], FORMAT)
+            stat_time = datetime.datetime.strptime(stat['timestamp'][:-4], DATE_TIME_FORMAT)
             if stat_time >= start_time and stat_time <= finish_time:
                 my_dict = { "id": id, "name": name, "jsonStats" : stat }
                 my_col.insert_one(my_dict)
