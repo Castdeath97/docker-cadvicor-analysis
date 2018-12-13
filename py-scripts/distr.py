@@ -12,9 +12,13 @@ import time
 import datetime
 import pymongo
 import json
+import re
 
-MONGO_HOST = "mongodb://127.0.0.1:3306/"
-ADVISOR_HOST = "http://localhost:3000/api/v1.3/"
+#MONGO_HOST = "mongodb://127.0.0.1:3306/"
+#ADVISOR_HOST = "http://localhost:3000/api/v1.3/"
+
+MONGO_HOST = "mongodb://35.197.228.218:3306/"
+ADVISOR_HOST = "http://35.197.228.218:3000/api/v1.3/"
 DATE_TIME_FORMAT = '%Y-%m-%dT%H:%M:%S.%f'
 BENCH_DURATION = 60
 
@@ -36,6 +40,9 @@ def get_sleep_time():
 # Record starting time stamp
 start_time = time.time()
 
+# Prime times list
+prime_times = []
+
 # program loop for runtime
 while ((time.time() - start_time) < BENCH_DURATION) : 
     # get time to sleep using method 
@@ -47,7 +54,12 @@ while ((time.time() - start_time) < BENCH_DURATION) :
     print("request made after: " + str(round(sleep_time,4)) 
     + "ms server says: \"" + r.text + "\"")
     print((time.time() - start_time))
+    prime_times.append(r.text) # record prime time calculation
 
+# extract integers from prime calculation
+for i in range(len(prime_times)):
+    prime_times[i] =  int(re.search(r'\d+', prime_times[i]).group())
+print(prime_times)
 # record benchmark finish time
 finish_time =  time.time()
 
@@ -58,7 +70,19 @@ my_client = pymongo.MongoClient(MONGO_HOST)
 
 # find db and collection
 my_db = my_client["benchdb"]
-my_col = my_db["statcollection"]
+
+# remove if stat collection exists to make a new one 
+if("statcollection" in my_db.list_collection_names()):
+    my_db["statcollection"].drop()   
+stat_col = my_db["statcollection"]
+
+# remove if prime calculation collection exists to make a new one
+if("primecollection" in my_db.list_collection_names()):
+    my_db["primecollection"].drop()   
+prime_calc_col = my_db["primecollection"]
+
+# record prime calculation 
+prime_calc_col.insert_one({"time": prime_times})
 
 # get json trees
 res = requests.get(ADVISOR_HOST + "subcontainers/docker/")
@@ -80,5 +104,5 @@ for container in js_arr:
 
         # convert python list to a json to store
         # Make an entry when done
-        my_dict = { "id":  docker_id, "name": name, "stats" : stat_list }
-        my_col.insert_one(my_dict)
+        my_dict = { "id":  docker_id, "name": name, "stats": stat_list }
+        stat_col.insert_one(my_dict)
