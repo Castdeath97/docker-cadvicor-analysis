@@ -1,6 +1,7 @@
 # docker-cadvicor-analysis
+This repository contains a series of programs used to test and experiement with docker locally and on the cloud (Google Cloud) with the help of cAdvisor.
 
-File Hierarchy 
+## File Hierarchy 
 
 *	docker-compose.yml: docker compose file used to deploy stack 
 *	sh-scripts: directory used to store shell scripts
