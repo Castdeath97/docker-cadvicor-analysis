@@ -13,3 +13,4 @@ This repository contains a series of programs used to test and experiement with 
        - start_swarm.py: Used to setup swarm stack using Docker’s Python SDK
        - distr.py: used to carry analytical load on the server using poisson /normal distribution and stores the results to the mongo database
        - Plots.ipyn: ipython notebook file used to plot the benchmarks stored in the mongo database
+*      report.pdf: analysis report
